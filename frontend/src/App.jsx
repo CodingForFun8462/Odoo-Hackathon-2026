@@ -1,7 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { TripProvider } from './context/TripContext';
 import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
+import MyTrips from './components/MyTrips';
+import CreateTrip from './components/CreateTrip';
 import './App.css';
 
 function ProtectedRoute({ children }) {
@@ -39,14 +42,25 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      {/* Fallback for other routes / future screens */}
       <Route
         path="/trips"
         element={
           <ProtectedRoute>
-            <Dashboard />
+            <MyTrips />
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="/trips/new"
+        element={
+          <ProtectedRoute>
+            <CreateTrip />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/create-trip"
+        element={<Navigate to="/trips/new" replace />}
       />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
@@ -56,9 +70,11 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      <TripProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </TripProvider>
     </AuthProvider>
   );
 }

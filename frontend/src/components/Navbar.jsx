@@ -1,15 +1,19 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 export default function Navbar() {
   const { currentUser, logout } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
+
+  const isDashboardActive = location.pathname === '/';
+  const isTripsActive = location.pathname.startsWith('/trips');
 
   return (
     <header className="main-navbar">
@@ -20,8 +24,18 @@ export default function Navbar() {
         </Link>
 
         <nav className="navbar-links">
-          <Link to="/" className="nav-link active">Dashboard</Link>
-          <Link to="/trips" className="nav-link">My Trips</Link>
+          <Link
+            to="/"
+            className={`nav-link ${isDashboardActive ? 'active' : ''}`}
+          >
+            Dashboard
+          </Link>
+          <Link
+            to="/trips"
+            className={`nav-link ${isTripsActive ? 'active' : ''}`}
+          >
+            My Trips
+          </Link>
         </nav>
 
         <div className="navbar-user">
