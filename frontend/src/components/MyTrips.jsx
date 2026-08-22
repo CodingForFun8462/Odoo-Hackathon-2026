@@ -157,13 +157,22 @@ export default function MyTrips() {
                 <div className="card-actions-bar">
                   <button
                     className="action-btn view-btn"
+                    onClick={() => navigate(`/trips/${trip.id}/builder`)}
+                    title="Open Itinerary Builder"
+                  >
+                    🗺️ Builder
+                  </button>
+                  <button
+                    className="action-btn preview-btn"
                     onClick={() => setViewingTrip(trip)}
+                    title="Quick Preview Details"
                   >
                     👁️ View
                   </button>
                   <button
                     className="action-btn edit-btn"
                     onClick={() => handleOpenEdit(trip)}
+                    title="Edit Trip Details"
                   >
                     ✏️ Edit
                   </button>
@@ -200,52 +209,76 @@ export default function MyTrips() {
       {/* View Trip Modal */}
       {viewingTrip && (
         <div className="modal-backdrop" onClick={() => setViewingTrip(null)}>
-          <div className="modal-card view-modal" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-card view-modal dark-theme"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            {/* Modal Hero with Cover Photo and Visible Close Button */}
             <div
               className="view-modal-hero"
-              style={{ backgroundImage: `url(${viewingTrip.cover_photo_url})` }}
+              style={{
+                backgroundImage: `linear-gradient(to top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.4)), url(${viewingTrip.cover_photo_url})`,
+              }}
             >
-              <button className="modal-close-icon" onClick={() => setViewingTrip(null)}>
+              <span className={`status-pill ${viewingTrip.status?.toLowerCase() || 'planning'}`}>
+                {viewingTrip.status || 'Planning'}
+              </span>
+              <button
+                className="modal-close-btn"
+                onClick={() => setViewingTrip(null)}
+                title="Close"
+                aria-label="Close modal"
+              >
                 ✕
               </button>
-              <span className={`status-pill ${viewingTrip.status?.toLowerCase()}`}>
-                {viewingTrip.status}
-              </span>
             </div>
 
             <div className="view-modal-body">
-              <h2>{viewingTrip.name}</h2>
+              <h2 className="modal-trip-title">{viewingTrip.name}</h2>
               <div className="modal-meta-row">
                 <span>📅 {formatDateRange(viewingTrip.start_date, viewingTrip.end_date)}</span>
-                <span>📍 {viewingTrip.stops?.length || 0} destinations</span>
+                <span>📍 {viewingTrip.stops?.length || 0} destinations scheduled</span>
               </div>
 
-              {viewingTrip.description && (
+              {viewingTrip.description ? (
                 <div className="modal-desc-box">
+                  <span className="desc-box-label">Description & Notes:</span>
                   <p>{viewingTrip.description}</p>
+                </div>
+              ) : (
+                <div className="modal-desc-box empty">
+                  <p>No description provided for this trip.</p>
                 </div>
               )}
 
-              {viewingTrip.stops && viewingTrip.stops.length > 0 ? (
-                <div className="stops-timeline">
-                  <h4>Planned Destinations & Stops</h4>
+              <div className="stops-timeline">
+                <h4>Planned Stops & Route ({viewingTrip.stops?.length || 0})</h4>
+                {viewingTrip.stops && viewingTrip.stops.length > 0 ? (
                   <div className="timeline-items">
                     {viewingTrip.stops.map((stop, index) => (
                       <div key={stop.id || index} className="timeline-item">
                         <span className="stop-number">{index + 1}</span>
                         <div className="stop-info">
-                          <strong>{stop.city}, {stop.country}</strong>
-                          <span className="stop-stay-days">{stop.days} days scheduled</span>
+                          <strong>
+                            {stop.city}, <span className="country-sub">{stop.country}</span>
+                          </strong>
+                          <span className="stop-stay-days">
+                            {stop.start_date && stop.end_date
+                              ? `📅 ${stop.start_date} – ${stop.end_date}`
+                              : `⏳ ${stop.days || 1} days scheduled`}
+                          </span>
                         </div>
                       </div>
                     ))}
                   </div>
-                </div>
-              ) : (
-                <div className="no-stops-notice">
-                  <p>No stops added yet. Ready for Itinerary Builder (Screen 5)!</p>
-                </div>
-              )}
+                ) : (
+                  <div className="no-stops-notice">
+                    <p>No stops added yet. Click below to add destinations in the Itinerary Builder!</p>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="modal-footer">
@@ -258,12 +291,12 @@ export default function MyTrips() {
               <button
                 className="primary-action-btn"
                 onClick={() => {
-                  const t = viewingTrip;
+                  const tId = viewingTrip.id;
                   setViewingTrip(null);
-                  handleOpenEdit(t);
+                  navigate(`/trips/${tId}/builder`);
                 }}
               >
-                ✏️ Edit Trip Details
+                🗺️ Open Itinerary Builder
               </button>
             </div>
           </div>
@@ -273,10 +306,19 @@ export default function MyTrips() {
       {/* Edit Trip Modal */}
       {editingTrip && (
         <div className="modal-backdrop" onClick={() => setEditingTrip(null)}>
-          <div className="modal-card edit-modal" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-card edit-modal dark-theme"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
             <div className="modal-header">
-              <h2>Edit Trip</h2>
-              <button className="modal-close-icon-text" onClick={() => setEditingTrip(null)}>
+              <h2>Edit Trip Details</h2>
+              <button
+                className="modal-close-btn small"
+                onClick={() => setEditingTrip(null)}
+                title="Close"
+              >
                 ✕
               </button>
             </div>

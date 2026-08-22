@@ -117,15 +117,15 @@ export default function Dashboard() {
                 <div className="trip-card-footer">
                   <button
                     className="card-action-btn primary"
-                    onClick={() => alert(`Opening Itinerary for: ${trip.name} (Screen 6)`)}
+                    onClick={() => navigate(`/trips/${trip.id}/builder`)}
                   >
-                    View Itinerary
+                    🗺️ Itinerary Builder
                   </button>
                   <button
                     className="card-action-btn secondary"
-                    onClick={() => alert(`Edit trip details for: ${trip.name}`)}
+                    onClick={() => navigate('/trips')}
                   >
-                    Edit
+                    View in My Trips
                   </button>
                 </div>
               </article>

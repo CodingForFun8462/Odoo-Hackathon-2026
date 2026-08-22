@@ -5,6 +5,7 @@ import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
 import MyTrips from './components/MyTrips';
 import CreateTrip from './components/CreateTrip';
+import ItineraryBuilder from './components/ItineraryBuilder';
 import './App.css';
 
 function ProtectedRoute({ children }) {
@@ -55,6 +56,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <CreateTrip />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/trips/:tripId/builder"
+        element={
+          <ProtectedRoute>
+            <ItineraryBuilder />
           </ProtectedRoute>
         }
       />
