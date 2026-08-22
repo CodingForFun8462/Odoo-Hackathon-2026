@@ -1,0 +1,75 @@
+:root {
+  --primary: #1a73e8;
+  --primary-dark: #0d47a1;
+  --bg: #f6f8fb;
+  --card: #ffffff;
+  --border: #e2e6ed;
+  --text: #1c1f26;
+  --muted: #6b7280;
+  --danger: #d93025;
+  --radius: 10px;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); }
+a { color: var(--primary); text-decoration: none; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px; background: var(--card); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
+}
+.brand { font-weight: 700; font-size: 1.2rem; cursor: pointer; color: var(--primary-dark); }
+#nav { display: flex; gap: 16px; align-items: center; }
+#nav a, #nav button { cursor: pointer; background: none; border: none; font-size: 0.95rem; color: var(--text); }
+#nav .btn-primary { background: var(--primary); color: white; padding: 8px 14px; border-radius: 6px; }
+
+main#app { max-width: 1000px; margin: 0 auto; padding: 24px; }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+.grid { display: grid; gap: 16px; }
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+h1 { font-size: 1.6rem; margin: 0 0 6px; }
+h2 { font-size: 1.2rem; margin: 0 0 10px; }
+h3 { font-size: 1rem; margin: 0 0 8px; }
+p.muted, span.muted { color: var(--muted); font-size: 0.9rem; }
+
+label { display: block; font-size: 0.85rem; margin: 10px 0 4px; color: var(--muted); }
+input, select, textarea {
+  width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; background: #fff;
+}
+textarea { resize: vertical; min-height: 60px; }
+
+.btn { display: inline-block; padding: 9px 16px; border-radius: 6px; border: 1px solid var(--border); background: #fff; cursor: pointer; font-size: 0.9rem; margin-right: 8px; }
+.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-danger { color: var(--danger); border-color: var(--danger); }
+.btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+
+.error { background: #fdecea; color: var(--danger); padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; font-size: 0.9rem; }
+.success { background: #e6f4ea; color: #188038; padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; font-size: 0.9rem; }
+
+.trip-card { cursor: pointer; transition: box-shadow .15s; }
+.trip-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+.trip-card .dates { font-size: 0.85rem; color: var(--muted); }
+.badge { display: inline-block; background: #eef2ff; color: var(--primary-dark); font-size: 0.75rem; padding: 2px 8px; border-radius: 20px; margin-left: 6px; }
+
+.tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
+.tabs button { padding: 10px 14px; border: none; background: none; cursor: pointer; font-size: 0.9rem; color: var(--muted); border-bottom: 2px solid transparent; }
+.tabs button.active { color: var(--primary); border-color: var(--primary); font-weight: 600; }
+
+.city-pill { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; }
+.stop-block { border-left: 3px solid var(--primary); padding-left: 14px; margin-bottom: 20px; }
+.activity-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 0.9rem; }
+.activity-row:last-child { border-bottom: none; }
+
+.budget-total { font-size: 2rem; font-weight: 700; color: var(--primary-dark); }
+.budget-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+.over-budget { color: var(--danger); font-weight: 600; }
+
+.day-header { font-weight: 700; margin: 14px 0 6px; color: var(--primary-dark); }
+
+.center { text-align: center; padding: 60px 20px; color: var(--muted); }
+.share-box { display: flex; gap: 8px; align-items: center; }
+.share-box input { flex: 1; }
