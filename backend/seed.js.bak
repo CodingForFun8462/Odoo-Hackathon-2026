@@ -1,6 +1,4 @@
-
 const { pool, initSchema, waitForDb } = require('./db');
-const bcrypt = require('bcryptjs');
 
 const cities = [
   ['Paris', 'France', 'Europe', 80, 95],
@@ -47,37 +45,27 @@ async function seed() {
   const { rows } = await pool.query('SELECT COUNT(*)::int AS c FROM cities');
   if (rows[0].c > 0) {
     console.log('Cities already seeded, skipping.');
-  } else {
-    const cityIds = {};
-    for (const [name, country, region, cost_index, popularity] of cities) {
-      const res = await pool.query(
-        'INSERT INTO cities (name, country, region, cost_index, popularity) VALUES ($1,$2,$3,$4,$5) RETURNING id',
-        [name, country, region, cost_index, popularity]
-      );
-      cityIds[name] = res.rows[0].id;
-    }
-    for (const [cityName, name, category, description, duration, cost] of activities) {
-      await pool.query(
-        'INSERT INTO activities (city_id, name, category, description, duration_hours, estimated_cost) VALUES ($1,$2,$3,$4,$5,$6)',
-        [cityIds[cityName], name, category, description, duration, cost]
-      );
-    }
-    console.log('Seeded cities and activities.');
+    await pool.end();
+    return;
   }
 
-  // Create admin user if not exists
-  const adminEmail = 'admin@example.com';
-  const adminPass = 'admin123';
-  const { rows: adminCheck } = await pool.query('SELECT id FROM users WHERE email = $1', [adminEmail]);
-  if (!adminCheck.length) {
-    const hash = bcrypt.hashSync(adminPass, 10);
-    await pool.query(
-      'INSERT INTO users (name, email, password_hash, is_admin) VALUES ($1,$2,$3,true)',
-      ['Admin', adminEmail, hash]
+  const cityIds = {};
+  for (const [name, country, region, cost_index, popularity] of cities) {
+    const res = await pool.query(
+      'INSERT INTO cities (name, country, region, cost_index, popularity) VALUES ($1,$2,$3,$4,$5) RETURNING id',
+      [name, country, region, cost_index, popularity]
     );
-    console.log('Admin user created (admin@example.com / admin123)');
+    cityIds[name] = res.rows[0].id;
   }
 
+  for (const [cityName, name, category, description, duration, cost] of activities) {
+    await pool.query(
+      'INSERT INTO activities (city_id, name, category, description, duration_hours, estimated_cost) VALUES ($1,$2,$3,$4,$5,$6)',
+      [cityIds[cityName], name, category, description, duration, cost]
+    );
+  }
+
+  console.log('Seeded cities and activities.');
   await pool.end();
 }
 
