@@ -1,31 +1,65 @@
-import { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Auth from './components/Auth';
+import Dashboard from './components/Dashboard';
 import './App.css';
 
-function App() {
-  const [currentUser, setCurrentUser] = useState(null);
+function ProtectedRoute({ children }) {
+  const { currentUser } = useAuth();
+  if (!currentUser) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
 
+function PublicRoute({ children }) {
+  const { currentUser } = useAuth();
+  if (currentUser) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+}
+
+function AppRoutes() {
   return (
-    <div className="app-container">
-      {currentUser ? (
-        <div className="dashboard-preview-card">
-          <div className="brand-badge">✈️ GlobeTrotter</div>
-          <h2>Welcome, {currentUser.name || currentUser.email}!</h2>
-          <p className="user-email">Signed in as: <strong>{currentUser.email}</strong></p>
-          <div className="dashboard-message">
-            <p>You have successfully logged in. Dashboard & Trips view will be connected here.</p>
-          </div>
-          <button
-            className="secondary-button"
-            onClick={() => setCurrentUser(null)}
-          >
-            Log Out
-          </button>
-        </div>
-      ) : (
-        <Auth onLoginSuccess={(user) => setCurrentUser(user)} />
-      )}
-    </div>
+    <Routes>
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <Auth />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      {/* Fallback for other routes / future screens */}
+      <Route
+        path="/trips"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

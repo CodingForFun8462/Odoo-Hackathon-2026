@@ -1,3 +1,14 @@
+.auth-page-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+  box-sizing: border-box;
+}
+
 .auth-card {
   background: #ffffff;
   border-radius: 12px;

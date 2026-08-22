@@ -1,7 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
-export default function Auth({ onLoginSuccess }) {
+export default function Auth() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const [mode, setMode] = useState('login'); // 'login' | 'signup' | 'forgot'
   const [formData, setFormData] = useState({
     name: '',
@@ -15,7 +20,6 @@ export default function Auth({ onLoginSuccess }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error for this field when typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
@@ -63,23 +67,23 @@ export default function Auth({ onLoginSuccess }) {
     if (mode === 'login') {
       setMessage('Logging in...');
       setTimeout(() => {
-        if (onLoginSuccess) {
-          onLoginSuccess({ email: formData.email, name: formData.email.split('@')[0] });
-        } else {
-          setMessage(`Welcome back, ${formData.email}! (Simulated login successful)`);
-        }
+        login({
+          email: formData.email,
+          name: formData.email.split('@')[0],
+        });
+        navigate('/');
       }, 400);
     } else if (mode === 'signup') {
       setMessage('Creating account...');
       setTimeout(() => {
-        if (onLoginSuccess) {
-          onLoginSuccess({ email: formData.email, name: formData.name });
-        } else {
-          setMessage(`Account created successfully for ${formData.name}! (Simulated signup)`);
-        }
+        login({
+          email: formData.email,
+          name: formData.name,
+        });
+        navigate('/');
       }, 400);
     } else if (mode === 'forgot') {
-      setMessage(`Password reset link sent to ${formData.email} (Simulated).`);
+      setMessage(`Password reset instructions sent to ${formData.email} (Simulated).`);
     }
   };
 
@@ -90,179 +94,181 @@ export default function Auth({ onLoginSuccess }) {
   };
 
   return (
-    <div className="auth-card">
-      <div className="auth-header">
-        <div className="brand-badge">✈️ GlobeTrotter</div>
-        <h2>
-          {mode === 'login' && 'Welcome Back'}
-          {mode === 'signup' && 'Create an Account'}
-          {mode === 'forgot' && 'Reset Password'}
-        </h2>
-        <p className="auth-subtitle">
-          {mode === 'login' && 'Log in to access and manage your travel itineraries.'}
-          {mode === 'signup' && 'Start planning and sharing multi-city trips in minutes.'}
-          {mode === 'forgot' && 'Enter your registered email to receive reset instructions.'}
-        </p>
-      </div>
-
-      <div className="auth-tabs">
-        {mode !== 'forgot' ? (
-          <>
-            <button
-              type="button"
-              className={`auth-tab ${mode === 'login' ? 'active' : ''}`}
-              onClick={() => switchMode('login')}
-            >
-              Log In
-            </button>
-            <button
-              type="button"
-              className={`auth-tab ${mode === 'signup' ? 'active' : ''}`}
-              onClick={() => switchMode('signup')}
-            >
-              Sign Up
-            </button>
-          </>
-        ) : (
-          <button
-            type="button"
-            className="auth-tab active"
-            onClick={() => switchMode('forgot')}
-          >
-            Password Recovery
-          </button>
-        )}
-      </div>
-
-      {message && <div className="auth-alert success">{message}</div>}
-
-      <form onSubmit={handleSubmit} noValidate className="auth-form">
-        {mode === 'signup' && (
-          <div className="form-group">
-            <label htmlFor="name">Full Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              placeholder="e.g. Alex Johnson"
-              value={formData.name}
-              onChange={handleChange}
-              className={errors.name ? 'input-error' : ''}
-              autoComplete="name"
-            />
-            {errors.name && <span className="field-error">{errors.name}</span>}
-          </div>
-        )}
-
-        <div className="form-group">
-          <label htmlFor="email">Email Address</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="you@example.com"
-            value={formData.email}
-            onChange={handleChange}
-            className={errors.email ? 'input-error' : ''}
-            autoComplete="email"
-          />
-          {errors.email && <span className="field-error">{errors.email}</span>}
+    <div className="auth-page-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <div className="brand-badge">✈️ GlobeTrotter</div>
+          <h2>
+            {mode === 'login' && 'Welcome Back'}
+            {mode === 'signup' && 'Create an Account'}
+            {mode === 'forgot' && 'Reset Password'}
+          </h2>
+          <p className="auth-subtitle">
+            {mode === 'login' && 'Log in to access and manage your travel itineraries.'}
+            {mode === 'signup' && 'Start planning and sharing multi-city trips in minutes.'}
+            {mode === 'forgot' && 'Enter your registered email to receive reset instructions.'}
+          </p>
         </div>
 
-        {mode !== 'forgot' && (
-          <div className="form-group">
-            <div className="label-with-link">
-              <label htmlFor="password">Password</label>
-              {mode === 'login' && (
-                <button
-                  type="button"
-                  className="link-button"
-                  onClick={() => switchMode('forgot')}
-                >
-                  Forgot password?
-                </button>
-              )}
-            </div>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={handleChange}
-              className={errors.password ? 'input-error' : ''}
-              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-            />
-            {errors.password && <span className="field-error">{errors.password}</span>}
-          </div>
-        )}
-
-        {mode === 'signup' && (
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              placeholder="••••••••"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className={errors.confirmPassword ? 'input-error' : ''}
-              autoComplete="new-password"
-            />
-            {errors.confirmPassword && (
-              <span className="field-error">{errors.confirmPassword}</span>
-            )}
-          </div>
-        )}
-
-        <button type="submit" className="submit-button">
-          {mode === 'login' && 'Log In'}
-          {mode === 'signup' && 'Sign Up'}
-          {mode === 'forgot' && 'Send Reset Link'}
-        </button>
-
-        <div className="auth-footer">
-          {mode === 'login' && (
-            <p>
-              Don't have an account?{' '}
+        <div className="auth-tabs">
+          {mode !== 'forgot' ? (
+            <>
               <button
                 type="button"
-                className="link-button highlight"
+                className={`auth-tab ${mode === 'login' ? 'active' : ''}`}
+                onClick={() => switchMode('login')}
+              >
+                Log In
+              </button>
+              <button
+                type="button"
+                className={`auth-tab ${mode === 'signup' ? 'active' : ''}`}
                 onClick={() => switchMode('signup')}
               >
-                Sign up
+                Sign Up
               </button>
-            </p>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="auth-tab active"
+              onClick={() => switchMode('forgot')}
+            >
+              Password Recovery
+            </button>
+          )}
+        </div>
+
+        {message && <div className="auth-alert success">{message}</div>}
+
+        <form onSubmit={handleSubmit} noValidate className="auth-form">
+          {mode === 'signup' && (
+            <div className="form-group">
+              <label htmlFor="name">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="e.g. Alex Johnson"
+                value={formData.name}
+                onChange={handleChange}
+                className={errors.name ? 'input-error' : ''}
+                autoComplete="name"
+              />
+              {errors.name && <span className="field-error">{errors.name}</span>}
+            </div>
+          )}
+
+          <div className="form-group">
+            <label htmlFor="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="you@example.com"
+              value={formData.email}
+              onChange={handleChange}
+              className={errors.email ? 'input-error' : ''}
+              autoComplete="email"
+            />
+            {errors.email && <span className="field-error">{errors.email}</span>}
+          </div>
+
+          {mode !== 'forgot' && (
+            <div className="form-group">
+              <div className="label-with-link">
+                <label htmlFor="password">Password</label>
+                {mode === 'login' && (
+                  <button
+                    type="button"
+                    className="link-button"
+                    onClick={() => switchMode('forgot')}
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                className={errors.password ? 'input-error' : ''}
+                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+              />
+              {errors.password && <span className="field-error">{errors.password}</span>}
+            </div>
           )}
 
           {mode === 'signup' && (
-            <p>
-              Already have an account?{' '}
-              <button
-                type="button"
-                className="link-button highlight"
-                onClick={() => switchMode('login')}
-              >
-                Log in
-              </button>
-            </p>
+            <div className="form-group">
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className={errors.confirmPassword ? 'input-error' : ''}
+                autoComplete="new-password"
+              />
+              {errors.confirmPassword && (
+                <span className="field-error">{errors.confirmPassword}</span>
+              )}
+            </div>
           )}
 
-          {mode === 'forgot' && (
-            <p>
-              Remembered your password?{' '}
-              <button
-                type="button"
-                className="link-button highlight"
-                onClick={() => switchMode('login')}
-              >
-                Back to login
-              </button>
-            </p>
-          )}
-        </div>
-      </form>
+          <button type="submit" className="submit-button">
+            {mode === 'login' && 'Log In'}
+            {mode === 'signup' && 'Sign Up'}
+            {mode === 'forgot' && 'Send Reset Link'}
+          </button>
+
+          <div className="auth-footer">
+            {mode === 'login' && (
+              <p>
+                Don't have an account?{' '}
+                <button
+                  type="button"
+                  className="link-button highlight"
+                  onClick={() => switchMode('signup')}
+                >
+                  Sign up
+                </button>
+              </p>
+            )}
+
+            {mode === 'signup' && (
+              <p>
+                Already have an account?{' '}
+                <button
+                  type="button"
+                  className="link-button highlight"
+                  onClick={() => switchMode('login')}
+                >
+                  Log in
+                </button>
+              </p>
+            )}
+
+            {mode === 'forgot' && (
+              <p>
+                Remembered your password?{' '}
+                <button
+                  type="button"
+                  className="link-button highlight"
+                  onClick={() => switchMode('login')}
+                >
+                  Back to login
+                </button>
+              </p>
+            )}
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
